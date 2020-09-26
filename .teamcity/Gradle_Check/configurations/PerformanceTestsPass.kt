@@ -84,7 +84,12 @@ subprojects/$performanceProjectName/build/$taskName => report/
                 artifacts(it.id!!) {
                     id = "ARTIFACT_DEPENDENCY_${it.id!!}"
                     cleanDestination = true
-                    artifactRules = "results/performance/build/test-results-*.zip!performance-tests/perf-results*.json => $performanceResultsDir/${it.bucketIndex}/"
+                    // The artifact rule results/*.doesnotexist => $performanceTestProject is there to clean up the target directory.
+                    // If we don't clean that up there might be leftover json files from other report builds running on the same machine.
+                    artifactRules = """
+                        results/*.doesnotexist => $performanceResultsDir/
+                        results/performance/build/test-results-*.zip!performance-tests/perf-results*.json => $performanceResultsDir/${it.bucketIndex}/
+                    """.trimIndent()
                 }
             }
         }
